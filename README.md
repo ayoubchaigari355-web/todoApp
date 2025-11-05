@@ -53,6 +53,51 @@ src/
 ├── App.tsx # Main app logic and state management
 └── index.tsx # Entry point (React DOM rendering)
 
+---
+
+## 🧠 Understanding the Main Files
+
+### 🧩 TaskForm.tsx
+Handles the **creation of new tasks**:
+- Uses `useState` to manage the input field.
+- Validates the input.
+- Calls the parent component function (`onSubmit`) to create a new task in Supabase.
+- Uses `isSubmitting` to prevent duplicate submissions.
+
+### 🧩 TaskItem.tsx
+Displays a **single task**:
+- Checkbox to toggle completion status.
+- Delete button with confirmation.
+- Formatted date display using JavaScript’s `toLocaleDateString()`.
+- Visual feedback when a task is completed (greyed text and “Completed” badge).
+
+### 🧩 TaskList.tsx
+Responsible for showing all tasks:
+- Splits tasks into **Active** and **Completed** groups.
+- Renders each task using the `TaskItem` component.
+- Shows an info message when no tasks exist.
+
+### 🧩 taskService.ts
+Handles **all communication with Supabase**.  
+Includes 4 main functions:
+1. `getTasks()` → Fetches all tasks  
+2. `createTask(title)` → Inserts a new task  
+3. `toggleTask(id, is_done)` → Updates task completion status  
+4. `deleteTask(id)` → Deletes a task by ID  
+
+Uses async/await and checks for errors from Supabase after each operation.
+
+### 🧩 supabase.ts
+Creates and configures the **Supabase client connection**.
+
+```ts
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
 
 🧱 Database Structure (Supabase)
 
