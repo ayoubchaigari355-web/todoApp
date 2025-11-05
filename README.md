@@ -1,0 +1,170 @@
+# 🧾 Task Management Application (React + Supabase)
+
+## 🧩 Project Overview
+
+This project is a **Task Management Application** (Todo List) developed using **React**, **TypeScript**, **Bootstrap**, and **Supabase**.  
+It allows users to **create, view, update, and delete tasks** in real time, with all data stored in a cloud database (**Supabase**).
+
+The main objective is to demonstrate how to build a modern and responsive web app that combines:
+
+- Frontend (React)
+- Backend-as-a-Service (Supabase)
+- Real-time database integration
+
+---
+
+## 🎯 Project Objectives
+
+- Implement a **task management system** with CRUD operations.
+- Use **Supabase** as a backend and database service.
+- Practice **React Hooks**, **TypeScript**, and **component-based architecture**.
+- Create a clean and **user-friendly interface** with Bootstrap.
+- Understand how **environment variables** and **database security policies** work.
+
+---
+
+## 🧰 Tools & Technologies
+
+| Category | Technology |
+|-----------|-------------|
+| Frontend | React, TypeScript |
+| UI Design | Bootstrap, Tailwind CSS |
+| Icons | Lucide React |
+| Backend | Supabase (PostgreSQL + API) |
+| Database | Supabase Cloud Database |
+| IDE | Visual Studio Code |
+| Version Control | Git & GitHub |
+
+---
+
+## 🏗️ Project Architecture
+
+The app follows a modular and organized folder structure:
+
+src/
+├── components/
+│ ├── TaskForm.tsx # Handles creating new tasks
+│ ├── TaskItem.tsx # Displays single task
+│ └── TaskList.tsx # Lists active and completed tasks
+├── services/
+│ └── taskService.ts # Handles all Supabase CRUD logic
+├── lib/
+│ └── supabase.ts # Initializes Supabase client
+├── App.tsx # Main app logic and state management
+└── index.tsx # Entry point (React DOM rendering)
+
+
+🧱 Database Structure (Supabase)
+
+The database contains a single table called tasks.
+
+Column	Type	Description
+id	UUID	Unique ID for each task
+title	Text	Description of the task
+is_done	Boolean	True if completed
+created_at	Timestamp	Auto-set when created
+updated_at	Timestamp	Auto-updated when modified
+
+SQL Script:
+```
+  CREATE TABLE IF NOT EXISTS tasks (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  title text NOT NULL,
+  is_done boolean DEFAULT false,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+```
+
+
+
+🔐 Supabase Concepts Explained
+🧩 1. Supabase Client
+
+createClient() connects your app to Supabase using:
+
+URL → project endpoint
+
+Anon key → public access key
+
+Together, they give your React app direct access to your hosted database.
+
+🧩 2. Row Level Security (RLS)
+ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
+
+
+RLS restricts access to each row in your table.
+No one can read or modify data unless you define policies.
+
+🧩 3. Policies
+
+Permission rules written in SQL:
+
+CREATE POLICY "Allow public read access" ON tasks
+FOR SELECT TO anon USING (true);
+
+
+✅ You used four of them (SELECT, INSERT, UPDATE, DELETE).
+This makes your demo app fully public, meaning anyone can use it.
+
+🧩 4. CRUD Operations (API)
+
+Supabase automatically exposes your database as a RESTful API.
+Each query is written in JavaScript but executed as SQL under the hood.
+
+Example:
+
+await supabase.from('tasks').select('*'); // SELECT * FROM tasks;
+await supabase.from('tasks').insert([{ title: 'Learn Supabase' }]);
+await supabase.from('tasks').update({ is_done: true }).eq('id', '...');
+await supabase.from('tasks').delete().eq('id', '...');
+
+🧩 5. Environment Variables
+
+Supabase credentials are stored in .env:
+
+VITE_SUPABASE_URL=https://xxxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1...
+
+
+Accessed using:
+
+import.meta.env.VITE_SUPABASE_URL
+
+
+✅ Keeps secrets out of GitHub for security.
+
+🧩 6. Error and Data Handling
+
+Every Supabase request returns { data, error }.
+You always check for error to catch database issues.
+
+⚙️ Application Flow
+
+User enters a task in the TaskForm.
+
+The form calls handleCreateTask() in App.tsx.
+
+App.tsx calls taskService.createTask().
+
+Supabase inserts the task into the tasks table.
+
+The new task is added to state (setTasks) → UI updates instantly.
+
+Toggling or deleting tasks works the same way — database updates first, UI second.
+
+🧩 Example of Component Communication
+```
+    TaskForm  → (creates task)
+        ↓
+    App (manages state)
+        ↓
+    taskService → Supabase → Database
+        ↑
+    TaskList / TaskItem (display + actions)
+
+```
+
+
+Each arrow means data flow or function call.
